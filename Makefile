@@ -13,7 +13,6 @@ CFLAGS = -Wall -Werror -Wextra -Wpedantic -ggdb -O0 -std=gnu17
 
 MEMCHECKFLAGS = -v\
 								-s\
-								--vgdb=full\
 								--time-stamp=yes\
 								--track-fds=all\
 								--leak-check=full\
@@ -39,21 +38,18 @@ all: directories $(PRG) test
 
 $(PRG):
 	echo "Compiling ${PRG}"
-	$(CC) $(CLFAGS) -o $(BIN_DIR)/$(PRG) $(SRC_DIR)/$(SRC)
+	$(CC) $(CFLAGS) -o $(BIN_DIR)/$(PRG) $(SRC_DIR)/$(SRC)
 
 test: test-memcheck test-callgrind test-massif
 
 test-memcheck:
-	valgrind --tool=memcheck $(MEMCHECKFLAGS) $(BIN_DIR)/$(PRG) -e hello
-	valgrind --tool=memcheck $(MEMCHECKFLAGS) $(BIN_DIR)/$(PRG) -d khoor
+	valgrind --tool=memcheck $(MEMCHECKFLAGS) $(BIN_DIR)/$(PRG) -e ello abcd
 
 test-callgrind:
-	valgrind --tool=callgrind $(CALLGRINDFLAGS) $(BIN_DIR)/$(PRG) -e hello
-	valgrind --tool=callgrind $(CALLGRINDFLAGS) $(BIN_DIR)/$(PRG) -d khoor
+	valgrind --tool=callgrind $(CALLGRINDFLAGS) $(BIN_DIR)/$(PRG) -e ello abcd
 
 test-massif:
-	valgrind --tool=massif $(MASSIFFLAGS) $(BIN_DIR)/$(PRG) -e hello
-	valgrind --tool=massif $(MASSIFFLAGS) $(BIN_DIR)/$(PRG) -d khoor
+	valgrind --tool=massif $(MASSIFFLAGS) $(BIN_DIR)/$(PRG) -e ello abcd
 
 directories:
 	echo "Creating"
