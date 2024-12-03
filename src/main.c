@@ -16,9 +16,20 @@ void help() {
   printf("\t-d\t\tdecrypt text\n");
 }
 
-void ascii_cipher(char *message) {
+int str_new(char **str) {
+  int str_len = MAX_STR_LEN * sizeof(char);
+  *str = malloc(str_len + 1);
+  if (*str == NULL) {
+    fprintf(stderr, "error(str): %s\n", strerror(errno));
+    return errno;
+  }
+  memset(*str, '\0', str_len);
+  return 0;
+}
+
+void ascii_cipher(char *message, char *cipher) {
   for (size_t i = 0; i < strlen(message); ++i) {
-    message[i] = message[i] + 3;
+    cipher[i] = message[i] + 3;
   }
 }
 
@@ -76,30 +87,27 @@ int main(int argc, char **argv) {
     help();
   }
 
-  int message_len = MAX_STR_LEN * sizeof(char);
-  char *message = malloc(message_len + 1);
-  if (message == NULL) {
-    fprintf(stderr, "error(message): %s\n", strerror(errno));
+  char *message = NULL;
+  if (str_new(&message) != 0) {
     return errno;
   }
-  memset(message, '\0', message_len);
 
-  int key_len = MAX_STR_LEN * sizeof(char);
-  char *key = malloc(key_len + 1);
-  if (key == NULL) {
-    fprintf(stderr, "error(key): %s\n", strerror(errno));
+  char *key = NULL;
+  if (str_new(&key) != 0) {
     return errno;
   }
-  memset(key, '\0', key_len);
+
   strcpy(key, argv[3]);
 
-  int cipher_len = MAX_STR_LEN * sizeof(char);
-  char *cipher = malloc(cipher_len + 1);
-  if (cipher == NULL) {
-    fprintf(stderr, "error(cipher): %s\n", strerror(errno));
+  char *ascii_cipher_message = NULL;
+  if (str_new(&ascii_cipher_message) != 0) {
     return errno;
   }
-  memset(cipher, '\0', cipher_len);
+
+  char *xor_cipher_message = NULL;
+  if (str_new(&xor_cipher_message) != 0) {
+    return errno;
+  }
 
   switch (encryption_type) {
   case 1:
@@ -110,9 +118,11 @@ int main(int argc, char **argv) {
       break;
     }
 
-    xor_cipher(message, key, cipher);
+    xor_cipher(message, key, xor_cipher_message);
+    ascii_cipher(message, ascii_cipher_message);
 
-    printf("%s\n", cipher);
+    printf("%s\n", xor_cipher_message);
+    printf("%s\n", ascii_cipher_message);
     break;
   case 2:
     strcpy(message, argv[2]);
@@ -127,8 +137,11 @@ int main(int argc, char **argv) {
   free(key);
   key = NULL;
 
-  free(cipher);
-  cipher = NULL;
+  free(ascii_cipher_message);
+  ascii_cipher_message = NULL;
+
+  free(xor_cipher_message);
+  xor_cipher_message = NULL;
 
   if (errno != EXIT_SUCCESS) {
     fprintf(stderr, "error: %s\n", strerror(errno));
