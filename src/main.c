@@ -121,13 +121,20 @@ int main(int argc, char **argv) {
     xor_cipher(message, key, xor_cipher_message);
     ascii_cipher(message, ascii_cipher_message);
 
-    printf("%s\n", xor_cipher_message);
-    printf("%s\n", ascii_cipher_message);
+    printf("ASCII: %s\n", ascii_cipher_message);
+    printf("XOR: %s\n", xor_cipher_message);
     break;
   case 2:
     strcpy(message, argv[2]);
+
+    if (strlen(key) == 0) {
+      fprintf(stderr, "error(key): key is empty\n");
+      break;
+    }
+
     ascii_decipher(message);
-    printf("%s\n", message);
+
+    printf("ASCII: %s\n", message);
     break;
   }
 
